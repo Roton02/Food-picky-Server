@@ -29,8 +29,11 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    const dataBasecollection = client.db('databaseCollection').collection('change')
-
+    const FeaturedCollection = client.db('FoodPicky').collection('FeaturedProduct')
+    app.get('/featured', async (req,res)=>{
+      const cursor = await FeaturedCollection.find().toArray()
+      res.send(cursor)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
