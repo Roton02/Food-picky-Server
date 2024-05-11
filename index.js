@@ -38,13 +38,19 @@ async function run() {
       if(req.query?.id){
         query = {_id : new ObjectId(req.query.id)}
       }
-      console.log(query);
+      // console.log(query);
       const cursor = await FeaturedCollection.find(query).toArray()
       res.send(cursor)
     })
     app.post('/addFood', async(req, res)=>{
       const foodData = req.body;
       const result = await FeaturedCollection.insertOne(foodData);
+      res.send(result)
+    })
+    app.delete('/delete/:id' , async (req,res)=>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const result = await FeaturedCollection.deleteOne(query)
       res.send(result)
     })
 
