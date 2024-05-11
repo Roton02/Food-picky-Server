@@ -49,6 +49,7 @@ async function run() {
     })
     app.delete('/delete/:id' , async (req,res)=>{
       const id = req.params.id
+      console.log(req.params.id);
       const query = {_id : new ObjectId(id)}
       const result = await FeaturedCollection.deleteOne(query)
       res.send(result)
@@ -64,10 +65,11 @@ async function run() {
           quantity:req.body.quantity, 
           expired_datetime:req.body.expired_datetime, 
           pickup_location:req.body.pickup_location, 
-          additional_notes:req.body.additional_notes
+          additional_notes:req.body.additional_notes,
+          status:req.body.status
       }
     };
-    const result = await FeaturedCollection.updateOne(query, options, update)
+    const result = await FeaturedCollection.updateOne(query,  update,options)
     res.send(result)
     })
 
