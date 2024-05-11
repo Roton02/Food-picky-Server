@@ -53,6 +53,23 @@ async function run() {
       const result = await FeaturedCollection.deleteOne(query)
       res.send(result)
     })
+    app.patch('/update/:id', async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const options = { upsert: true };
+      const update = { 
+        $set:{
+          food_name:req.body.food_name, 
+          food_image:req.body.food_image, 
+          quantity:req.body.quantity, 
+          expired_datetime:req.body.expired_datetime, 
+          pickup_location:req.body.pickup_location, 
+          additional_notes:req.body.additional_notes
+      }
+    };
+    const result = await FeaturedCollection.updateOne(query, options, update)
+    res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
