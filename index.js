@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 require('dotenv').config()
 
@@ -31,8 +31,21 @@ async function run() {
     await client.connect();
     const FeaturedCollection = client.db('FoodPicky').collection('FeaturedProduct')
     app.get('/featured', async (req,res)=>{
-      const cursor = await FeaturedCollection.find().toArray()
+      let query = {};
+      if (req.query?.email) {
+        query = {'donator.email': req.query.email };
+      }
+      if(req.query?.id){
+        query = {_id : new ObjectId(req.query.id)}
+      }
+      console.log(query);
+      const cursor = await FeaturedCollection.find(query).toArray()
       res.send(cursor)
+    })
+    app.post('/addFood', async(req, res)=>{
+      const foodData = req.body;
+      const result = await FeaturedCollection.insertOne(foodData);
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
