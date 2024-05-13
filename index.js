@@ -30,6 +30,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const FeaturedCollection = client.db('FoodPicky').collection('FeaturedProduct')
+    const requestedCollection = client.db('FoodPicky').collection('requestedList')
     app.get('/featured', async (req,res)=>{
       let query = {};
       if (req.query?.email) {
@@ -60,17 +61,29 @@ async function run() {
       const options = { upsert: true };
       const update = { 
         $set:{
+          email: req.body.email,
           food_name:req.body.food_name, 
           food_image:req.body.food_image, 
           quantity:req.body.quantity, 
           expired_datetime:req.body.expired_datetime, 
           pickup_location:req.body.pickup_location, 
-          additional_notes:req.body.additional_notes,
-          status:req.body.status
+          additional_notes:req.body.additional_notes
+         
       }
     };
     const result = await FeaturedCollection.updateOne(query,  update,options)
     res.send(result)
+    })
+    app.post('/requested' , async (req, res)=>{
+      const requestDoc = req.body;
+      const result = await requestedCollection.insertOne(requestDoc);
+      res.send(result)
+    })
+    app.get('/requested/:email', async (req,res) =>{
+      const mail = req.params.email;
+      const query = {email: mail}
+      const result = await requestedCollection.find(query).toArray();
+      res.send(result)
     })
 
     // Send a ping to confirm a successful connection
