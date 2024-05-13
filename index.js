@@ -30,7 +30,6 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const FeaturedCollection = client.db('FoodPicky').collection('FeaturedProduct')
-    const requestedCollection = client.db('FoodPicky').collection('requestedList')
     app.get('/featured', async (req,res)=>{
       let query = {};
       if (req.query?.email) {
@@ -43,6 +42,18 @@ async function run() {
       const cursor = await FeaturedCollection.find(query).toArray()
       res.send(cursor)
     })
+    app.get('/featured/avilable', async(req,res)=>{
+      const query = {status : 'available'}
+      const cursor = await FeaturedCollection.find(query).toArray()
+      res.send(cursor)
+    })
+    app.get('/featured/:id',async(req,res)=>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)};
+      const result = await FeaturedCollection.findOne(query)
+      res.send(result)
+    })
+
     app.post('/addFood', async(req, res)=>{
       const foodData = req.body;
       const result = await FeaturedCollection.insertOne(foodData);
@@ -75,14 +86,20 @@ async function run() {
     res.send(result)
     })
     app.post('/requested' , async (req, res)=>{
-      const requestDoc = req.body;
-      const result = await requestedCollection.insertOne(requestDoc);
+      const updateData ={$set:{
+        status:'requested',
+        requsterEmail: req.body.requsterEmail,
+        additional_notes: req.body.additional_notes
+
+      }}
+      // const result = await requestedCollection.insertOne(requestDoc);
+      const result = await FeaturedCollection.updateOne({_id : new ObjectId(req.body._id)},updateData)
       res.send(result)
     })
     app.get('/requested/:email', async (req,res) =>{
       const mail = req.params.email;
-      const query = {email: mail}
-      const result = await requestedCollection.find(query).toArray();
+      const query = {requsterEmail: mail}
+      const result = await FeaturedCollection.find(query).toArray();
       res.send(result)
     })
 
