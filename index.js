@@ -120,7 +120,7 @@ async function run() {
       const result = await FeaturedCollection.findOne(query);
       res.send(result);
     });
-    app.get('/featured/:email' ,logger,verifyToken, async(req,res)=>{
+    app.get('/featured-info/:email' ,logger,verifyToken, async(req,res)=>{
       if (req.params?.email !== req.user.email) {
         return res.status(403).send({ message: "Forbidden" });
       }
