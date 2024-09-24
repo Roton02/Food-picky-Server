@@ -101,7 +101,13 @@ async function run() {
     app.get("/featured/avilable", async (req, res) => {
       const sort = req.query.sorts;
       // console.log(sort);
-      const query = { status: "available" };
+      const search = req.query.search
+      // console.log(search);
+      const searchQuery = {$regex : search , $options : 'i'}
+      let query = { status: "available" };
+      if (search) {
+        query={...query , food_name:searchQuery }
+      }
       let options = {};
       if (sort) {
         options = {
