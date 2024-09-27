@@ -45,7 +45,6 @@ const verifyToken = (req, res, next) => {
   });
 };
 
-
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.mi2xoxt.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -84,9 +83,10 @@ async function run() {
     const FeaturedCollection = client
       .db("FoodPicky")
       .collection("FeaturedProduct");
-    app.get("/featured",  async (req, res) => {
+    const countryCollection = client.db("FoodPicky").collection("country");
+    app.get("/featured", async (req, res) => {
       // console.log(req.user);
-     
+
       let query = {};
       if (req.query?.email) {
         query = { "donator.email": req.query.email };
@@ -101,12 +101,12 @@ async function run() {
     app.get("/featured/avilable", async (req, res) => {
       const sort = req.query.sorts;
       // console.log(sort);
-      const search = req.query.search
+      const search = req.query.search;
       // console.log(search);
-      const searchQuery = {$regex : search , $options : 'i'}
+      const searchQuery = { $regex: search, $options: "i" };
       let query = { status: "available" };
       if (search) {
-        query={...query , food_name:searchQuery }
+        query = { ...query, food_name: searchQuery };
       }
       let options = {};
       if (sort) {
@@ -116,7 +116,7 @@ async function run() {
         const result = await FeaturedCollection.find(query, options).toArray();
         return res.send(result);
       }
-     
+
       const cursor = await FeaturedCollection.find(query).toArray();
       res.send(cursor);
     });
@@ -126,16 +126,16 @@ async function run() {
       const result = await FeaturedCollection.findOne(query);
       res.send(result);
     });
-    app.get('/featured-info/:email' ,logger,verifyToken, async(req,res)=>{
+    app.get("/featured-info/:email", logger, verifyToken, async (req, res) => {
       if (req.params?.email !== req.user.email) {
         return res.status(403).send({ message: "Forbidden" });
       }
       const email = req.params?.email;
-      const query = { "donator.email": email}
+      const query = { "donator.email": email };
       const cursor = await FeaturedCollection.find(query).toArray();
       res.send(cursor);
-    })
-    
+    });
+
     app.post("/addFood", async (req, res) => {
       const foodData = req.body;
       const result = await FeaturedCollection.insertOne(foodData);
@@ -181,7 +181,7 @@ async function run() {
       );
       res.send(result);
     });
-    app.get("/requested/:email",logger,verifyToken, async (req, res) => {
+    app.get("/requested/:email", logger, verifyToken, async (req, res) => {
       console.log(req.user);
       if (req.params?.email !== req.user.email) {
         return res.status(403).send({ message: "Forbidden" });
@@ -191,11 +191,15 @@ async function run() {
       const result = await FeaturedCollection.find(query).toArray();
       res.send(result);
     });
-
+    // new code ----- 09 / 24 /2024
+    app.get("/country", async (req, res) => {
+      const result = await countryCollection.find().toArray()
+      res.send(result)
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
+      " successfully connected to MongoDB!"
     );
   } finally {
     // Ensures that the client will close when you finish/error
