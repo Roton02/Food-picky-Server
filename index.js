@@ -84,6 +84,7 @@ async function run() {
       .db("FoodPicky")
       .collection("FeaturedProduct");
     const countryCollection = client.db("FoodPicky").collection("country");
+    const ReviewsCollection = client.db("FoodPicky").collection("reviews");
     app.get("/featured", async (req, res) => {
       // console.log(req.user);
 
@@ -196,6 +197,16 @@ async function run() {
       const result = await countryCollection.find().toArray()
       res.send(result)
     });
+    app.post("/reviews" , async (req,res)=>{
+      const review = req.body ;
+      console.log(review);
+      const result = await ReviewsCollection.insertOne(review)
+      res.send(result)
+    })
+    app.get('/reviewsCollection', async (req, res)=>{
+      const cursor = await ReviewsCollection.find().toArray()
+      res.send(cursor)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
