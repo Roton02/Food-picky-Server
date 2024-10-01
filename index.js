@@ -85,6 +85,7 @@ async function run() {
       .collection("FeaturedProduct");
     const countryCollection = client.db("FoodPicky").collection("country");
     const ReviewsCollection = client.db("FoodPicky").collection("reviews");
+    const userCollection = client.db("FoodPicky").collection("users");
     app.get("/featured", async (req, res) => {
       // console.log(req.user);
 
@@ -194,19 +195,19 @@ async function run() {
     });
     // new code ----- 09 / 24 /2024
     app.get("/country", async (req, res) => {
-      const result = await countryCollection.find().toArray()
-      res.send(result)
+      const result = await countryCollection.find().toArray();
+      res.send(result);
     });
-    app.post("/reviews" , async (req,res)=>{
-      const review = req.body ;
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
       console.log(review);
-      const result = await ReviewsCollection.insertOne(review)
-      res.send(result)
-    })
-    app.get('/reviewsCollection', async (req, res)=>{
-      const cursor = await ReviewsCollection.find().toArray()
-      res.send(cursor)
-    })
+      const result = await ReviewsCollection.insertOne(review);
+      res.send(result);
+    });
+    app.get("/reviewsCollection", async (req, res) => {
+      const cursor = await ReviewsCollection.find().toArray();
+      res.send(cursor);
+    });
     app.post("/users", async (req, res) => {
       const user = req.body;
       // insert email if user doesnt exists:
@@ -219,11 +220,13 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
+    app.get("/Admin/user", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(
-      " successfully connected to MongoDB!"
-    );
+    console.log(" successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
