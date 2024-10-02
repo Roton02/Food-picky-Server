@@ -208,6 +208,8 @@ async function run() {
       const cursor = await ReviewsCollection.find().toArray();
       res.send(cursor);
     });
+
+    // Admi Router
     app.post("/users", async (req, res) => {
       const user = req.body;
       // insert email if user doesnt exists:
@@ -238,6 +240,11 @@ async function run() {
         res.send(result);
       }
     );
+
+    app.get("/Admin/AllFood", async (req, res) => {
+      const cursor = await FeaturedCollection.find().toArray();
+      res.send(cursor);
+    });
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(" successfully connected to MongoDB!");
