@@ -128,10 +128,10 @@ async function run() {
       const result = await FeaturedCollection.findOne(query);
       res.send(result);
     });
-    app.get("/featured-info/:email", logger, verifyToken, async (req, res) => {
-      if (req.params?.email !== req.user.email) {
-        return res.status(403).send({ message: "Forbidden" });
-      }
+    app.get("/featured-info/:email", async (req, res) => {
+      // if (req.params?.email !== req.user.email) {
+      //   return res.status(403).send({ message: "Forbidden" });
+      // }
       const email = req.params?.email;
       const query = { "donator.email": email };
       const cursor = await FeaturedCollection.find(query).toArray();
@@ -245,6 +245,26 @@ async function run() {
       const cursor = await FeaturedCollection.find().toArray();
       res.send(cursor);
     });
+    app.delete(
+      "/allcategory/admin/delete/:id",
+      async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id) };
+        const result = await FeaturedCollection.deleteOne(query);
+        res.send(result);
+      }
+    );
+    app.get("/Admin/requested", logger, verifyToken, async (req, res) => {
+      console.log(req.user);
+      const result = await FeaturedCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/Admin/requested", logger, verifyToken, async (req, res) => {
+      console.log(req.user);
+      const result = await FeaturedCollection.find().toArray();
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(" successfully connected to MongoDB!");
