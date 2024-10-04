@@ -264,6 +264,18 @@ async function run() {
       const result = await FeaturedCollection.find().toArray();
       res.send(result);
     });
+    app.patch('/admin/updateAccepted', async (req, res) => {
+      const id = req.body.id;
+      const updateData = {
+        $set: {
+          status: "accepted",
+        },
+      };
+      const result = await FeaturedCollection.updateOne({ _id: new ObjectId(id) },
+        updateData
+      );
+      res.send(result);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
