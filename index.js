@@ -145,7 +145,7 @@ async function run() {
     });
     app.delete("/delete/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(req.params.id);
+      // console.log(req.params.id);
       const query = { _id: new ObjectId(id) };
       const result = await FeaturedCollection.deleteOne(query);
       res.send(result);
@@ -184,7 +184,7 @@ async function run() {
       res.send(result);
     });
     app.get("/requested/:email", logger, verifyToken, async (req, res) => {
-      console.log(req.user);
+      // console.log(req.user);
       if (req.params?.email !== req.user.email) {
         return res.status(403).send({ message: "Forbidden" });
       }
@@ -200,7 +200,7 @@ async function run() {
     });
     app.post("/reviews", async (req, res) => {
       const review = req.body;
-      console.log(review);
+      // console.log(review);
       const result = await ReviewsCollection.insertOne(review);
       res.send(result);
     });
@@ -254,21 +254,32 @@ async function run() {
         res.send(result);
       }
     );
-    app.get("/Admin/requested", logger, verifyToken, async (req, res) => {
-      console.log(req.user);
-      const result = await FeaturedCollection.find().toArray();
+    app.get("/Admin/requested",  async (req, res) => {
+      // console.log(req.user);
+      const query = {status : 'requested'}
+      const result = await FeaturedCollection.find(query).toArray();
       res.send(result);
     });
-    app.get("/Admin/requested", logger, verifyToken, async (req, res) => {
-      console.log(req.user);
-      const result = await FeaturedCollection.find().toArray();
-      res.send(result);
-    });
+
     app.patch('/admin/updateAccepted', async (req, res) => {
       const id = req.body.id;
+      // console.log(id);
       const updateData = {
         $set: {
           status: "accepted",
+        },
+      };
+      const result = await FeaturedCollection.updateOne({ _id: new ObjectId(id) },
+        updateData
+      );
+      res.send(result);
+    })
+    app.patch('/admin/updateStockover', async (req, res) => {
+      const id = req.body.id;
+      console.log(id);
+      const updateData = {
+        $set: {
+          status: "StockOut",
         },
       };
       const result = await FeaturedCollection.updateOne({ _id: new ObjectId(id) },
