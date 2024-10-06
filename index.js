@@ -273,6 +273,7 @@ async function run() {
         updateData
       );
       res.send(result);
+      // res.send
     })
     app.patch('/admin/updateStockover', async (req, res) => {
       const id = req.body.id;
@@ -290,7 +291,7 @@ async function run() {
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(" successfully connected to MongoDB!");
+    console.log(" successfully connected to MongoDB! asa");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
