@@ -263,7 +263,7 @@ async function run() {
 
     app.patch('/admin/updateAccepted', async (req, res) => {
       const id = req.body.id;
-      // console.log(id);
+      console.log(id);
       const updateData = {
         $set: {
           status: "accepted",
