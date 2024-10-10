@@ -273,7 +273,7 @@ async function run() {
         updateData
       );
       res.send(result);
-      // res.send
+      res.send({data:true})
     })
     app.patch('/admin/updateStockover', async (req, res) => {
       const id = req.body.id;
