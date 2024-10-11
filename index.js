@@ -41,6 +41,7 @@ const verifyToken = (req, res, next) => {
       return res.status(401).send({ message: "UnAuthorized Access" });
     }
     req.user = decoded;
+    console.log(decoded);
     next();
   });
 };
@@ -225,6 +226,22 @@ async function run() {
     app.get("/Admin/user", async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
+    });
+    app.get("/users/admin/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      console.log('object', email);
+
+      if (email !== req.user.decoded.email) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === "admin";
+      }
+      res.send({ admin });
     });
     app.patch(
       "/users/admin/:id",
