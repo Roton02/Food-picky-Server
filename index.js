@@ -246,13 +246,19 @@ async function run() {
 
     //   res.send( user?.role );
     // });
-    app.get("/users/admin/:email", async (req, res) => {
-      const reqEmail = req.params.email;
-      console.log(reqEmail);
-      const query = { email: reqEmail };
-      const result = await userCollection.findOne(query);
-      console.log("user", result);
-      res.send(result);
+    app.get("/users/admins/:email", async (req, res) => {
+      const reqEmail = req.params?.email;
+      console.log("reqEmail", reqEmail);
+      const query = { email: `${reqEmail}` };
+      console.log(query);
+      // const result = await userCollection.findOne(query);
+      // console.log("user", result);
+      // res.send(result);
+      if (reqEmail) {
+        const result = await userCollection.findOne(query);
+        console.log("user", result);
+        res.send(result);
+      }
     });
 
     app.patch("/users/admin/:id", async (req, res) => {
