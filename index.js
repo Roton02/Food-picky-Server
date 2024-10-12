@@ -227,59 +227,64 @@ async function run() {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
-    app.get("/users/admin/:email", verifyToken,  async (req, res) => {
-      const email = req.params.email;
-      console.log('object', req.user);
+    // app.get("/users/admin/:email", verifyToken, async (req, res) => {
+    //   const email = req.params.email;
+    //   console.log("object", req.user);
 
-      if (email !== req.user.email) {
-        return res.status(403).send({ message: "forbidden access" });
-      }
+    //   if (email !== req.user.email) {
+    //     return res.status(403).send({ message: "forbidden access" });
+    //   }
 
-      const query = { email: email };
-      const user = await userCollection.findOne(query);
-      console.log('user',email,user);
-      let admin = false;
-      if (user) {
-        admin = user?.role === "admin";
-      }
-      res.send({ admin });
+    //   const query = { email: email };
+    //   const user = await userCollection.findOne(query);
+    //   console.log("user", email);
+    //   // let admin = false;
+    //   // if (user) {
+    //   //   admin = user?.role === "admin";
+    //   //   admin = true
+    //   // }
+
+    //   res.send( user?.role );
+    // });
+    app.get("/users/admin/:email", async (req, res) => {
+      const reqEmail = req.params.email;
+      console.log(reqEmail);
+      const query = { email: reqEmail };
+      const result = await userCollection.findOne(query);
+      console.log("user", result);
+      res.send(result);
     });
-    app.patch(
-      "/users/admin/:id",
-      async (req, res) => {
-        const id = req.params.id;
-        const filter = { _id: new ObjectId(id) };
-        const updatedDoc = {
-          $set: {
-            role: "admin",
-          },
-        };
-        const result = await userCollection.updateOne(filter, updatedDoc);
-        res.send(result);
-      }
-    );
+
+    app.patch("/users/admin/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
 
     app.get("/Admin/AllFood", async (req, res) => {
       const cursor = await FeaturedCollection.find().toArray();
       res.send(cursor);
     });
-    app.delete(
-      "/allcategory/admin/delete/:id",
-      async (req, res) => {
-        const id = req.params.id;
-        const query = { _id: new ObjectId(id) };
-        const result = await FeaturedCollection.deleteOne(query);
-        res.send(result);
-      }
-    );
-    app.get("/Admin/requested",  async (req, res) => {
+    app.delete("/allcategory/admin/delete/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await FeaturedCollection.deleteOne(query);
+      res.send(result);
+    });
+    app.get("/Admin/requested", async (req, res) => {
       // console.log(req.user);
-      const query = {status : 'requested'}
+      const query = { status: "requested" };
       const result = await FeaturedCollection.find(query).toArray();
       res.send(result);
     });
 
-    app.patch('/admin/updateAccepted', async (req, res) => {
+    app.patch("/admin/updateAccepted", async (req, res) => {
       const id = req.body.id;
       console.log(id);
       const updateData = {
@@ -287,13 +292,14 @@ async function run() {
           status: "accepted",
         },
       };
-      const result = await FeaturedCollection.updateOne({ _id: new ObjectId(id) },
+      const result = await FeaturedCollection.updateOne(
+        { _id: new ObjectId(id) },
         updateData
       );
       res.send(result);
-      res.send({data:true})
-    })
-    app.patch('/admin/updateStockover', async (req, res) => {
+      res.send({ data: true });
+    });
+    app.patch("/admin/updateStockover", async (req, res) => {
       const id = req.body.id;
       console.log(id);
       const updateData = {
@@ -301,11 +307,12 @@ async function run() {
           status: "StockOut",
         },
       };
-      const result = await FeaturedCollection.updateOne({ _id: new ObjectId(id) },
+      const result = await FeaturedCollection.updateOne(
+        { _id: new ObjectId(id) },
         updateData
       );
       res.send(result);
-    })
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
