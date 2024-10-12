@@ -227,16 +227,17 @@ async function run() {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
-    app.get("/users/admin/:email", verifyToken, async (req, res) => {
+    app.get("/users/admin/:email", verifyToken,  async (req, res) => {
       const email = req.params.email;
-      console.log('object', email);
+      console.log('object', req.user);
 
-      if (email !== req.user.decoded.email) {
+      if (email !== req.user.email) {
         return res.status(403).send({ message: "forbidden access" });
       }
 
       const query = { email: email };
       const user = await userCollection.findOne(query);
+      console.log('user',email,user);
       let admin = false;
       if (user) {
         admin = user?.role === "admin";
