@@ -256,7 +256,7 @@ async function run() {
       // res.send(result);
       if (reqEmail) {
         const result = await userCollection.findOne(query);
-        console.log("user", result);
+        console.log(" Server user", result);
         res.send(result);
       }
     });
