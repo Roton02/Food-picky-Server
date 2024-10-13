@@ -246,7 +246,7 @@ async function run() {
 
     //   res.send( user?.role );
     // });
-    app.get("/users/admins/:email", async (req, res) => {
+    app.get("/users/admins/:email", logger,verifyToken, async (req, res) => {
       const reqEmail = req.params?.email;
       console.log("reqEmail", reqEmail);
       const query = { email: `${reqEmail}` };
