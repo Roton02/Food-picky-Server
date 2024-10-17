@@ -107,7 +107,7 @@ async function run() {
       const search = req.query.search;
       // console.log(search);
       const searchQuery = { $regex: search, $options: "i" };
-      let query = { status: "available" };
+      let query = {  };
       if (search) {
         query = { ...query, food_name: searchQuery };
       }
@@ -123,6 +123,12 @@ async function run() {
       const cursor = await FeaturedCollection.find(query).toArray();
       res.send(cursor);
     });
+
+    app.get('/FoodCount' , async (req, res) => {
+      const count = await FeaturedCollection.estimatedDocumentCount();
+      res.send({ count });
+    })
+
     app.get("/featured/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
