@@ -146,7 +146,7 @@ async function run() {
           options.sort = { expired_datetime: sort === "recentDays" ? 1 : -1 };
       }
       if (priceRange) {
-          options.sort = { price: priceRange === "HtO" ? -1 : 1 };
+          options.sort = { price: priceRange === "HtO" ? 1 : -1 };
       }
   
       try {
