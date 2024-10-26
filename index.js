@@ -26,13 +26,13 @@ app.get("/", (req, res) => {
 
 // MiddleWare
 const logger = (req, res, next) => {
-  console.log(req.hostname);
+  // console.log(req.hostname);
   next();
 };
 const verifyToken = (req, res, next) => {
   const token = req.cookies.token;
   // console.log(req.cookies);
-  console.log(token);
+  // console.log(token);
   if (!token) {
     return res.status(401).send({ message: "Authorization access not allow" });
   }
@@ -41,7 +41,7 @@ const verifyToken = (req, res, next) => {
       return res.status(401).send({ message: "UnAuthorized Access" });
     }
     req.user = decoded;
-    console.log(decoded);
+    // console.log(decoded);
     next();
   });
 };
@@ -101,32 +101,69 @@ async function run() {
       const cursor = await FeaturedCollection.find(query).toArray();
       res.send(cursor);
     });
+    // app.get("/featured/avilable", async (req, res) => {
+    //   const sort = req.query.sorts;
+    //   // console.log(sort);
+    //   const priceRange = req.query.priceRange;
+    //   console.log('priceRange',priceRange );
+
+    //   const search = req.query.search;
+    //   // console.log(search);
+    //   const searchQuery = { $regex: search, $options: "i" };
+    //   let query = {  };
+    //   if (search) {
+    //     query = { ...query, food_name: searchQuery };
+    //   }
+    //   let options = {};
+    //   if (sort) {
+    //     options = {
+    //       sort: { expired_datetime: sort === "recentDays" ? 1 : -1 },
+    //     };
+    //     const result = await FeaturedCollection.find(query, options).toArray();
+    //     return res.send(result);
+    //   }
+
+    //   const cursor = await FeaturedCollection.find(query).toArray();
+    //   res.send(cursor);
+    // });
     app.get("/featured/avilable", async (req, res) => {
       const sort = req.query.sorts;
-      // console.log(sort);
       const priceRange = req.query.priceRange;
-      console.log(priceRange);
-
       const search = req.query.search;
-      // console.log(search);
       const searchQuery = { $regex: search, $options: "i" };
-      let query = {  };
-      if (search) {
-        query = { ...query, food_name: searchQuery };
-      }
+      
+      // Initialize query and options
+      let query = {};
       let options = {};
-      if (sort) {
-        options = {
-          sort: { expired_datetime: sort === "recentDays" ? 1 : -1 },
-        };
-        const result = await FeaturedCollection.find(query, options).toArray();
-        return res.send(result);
+  
+      // Add search condition if `search` is provided
+      if (search) {
+          query = { ...query, food_name: searchQuery };
       }
-
-      const cursor = await FeaturedCollection.find(query).toArray();
-      res.send(cursor);
-    });
-
+  
+      // Determine sort options for `sorts` and `priceRange`
+      if (sort) {
+          options.sort = { expired_datetime: sort === "recentDays" ? 1 : -1 };
+      }
+      if (priceRange) {
+          options.sort = { price: priceRange === "HtO" ? -1 : 1 };
+      }
+  
+      try {
+          // Fetch data from the database with the given query and options
+          const result = await FeaturedCollection.find(query, options).toArray();
+          
+          // Send the result back to the client
+          if (result.length === 0) {
+              return res.status(404).json({ message: "Data not found" });
+          }
+          res.send(result);
+      } catch (error) {
+          console.error("Error fetching data:", error);
+          res.status(500).json({ message: "Internal Server Error" });
+      }
+  });
+  
     app.get('/FoodCount' , async (req, res) => {
       const count = await FeaturedCollection.estimatedDocumentCount();
       res.send({ count });
@@ -265,7 +302,7 @@ async function run() {
       // res.send(result);
       if (reqEmail) {
         const result = await userCollection.findOne(query);
-        console.log(" Server user", result);
+        // console.log(" Server user", result);
         res.send(result);
       }
     });
@@ -331,7 +368,7 @@ async function run() {
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log(" successfully connected to MongoDB!");
+    console.log(" successful connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
