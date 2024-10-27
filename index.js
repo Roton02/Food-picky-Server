@@ -87,6 +87,9 @@ async function run() {
     const countryCollection = client.db("FoodPicky").collection("country");
     const ReviewsCollection = client.db("FoodPicky").collection("reviews");
     const userCollection = client.db("FoodPicky").collection("users");
+    const RequestCollection = client
+      .db("FoodPicky")
+      .collection("requestedList");
     app.get("/featured", async (req, res) => {
       // console.log(req.user);
 
@@ -132,48 +135,48 @@ async function run() {
       const search = req.query.search;
       const brands = req.query.brands;
       const searchQuery = { $regex: search, $options: "i" };
-      console.log('the brands' , brands);
+      console.log("the brands", brands);
       // Initialize query and options
       let query = {};
       let options = {};
-      
+
       // Add search condition if `search` is provided
       if (search) {
-          query = { ...query, food_name: searchQuery };
+        query = { ...query, food_name: searchQuery };
       }
-     // Brands filter
-     if (brands && brands !== "") {
-      const brandArray = brands.split(",");
-      query.pickup_location = { $in: brandArray };
-    }
-    
+      // Brands filter
+      if (brands && brands !== "") {
+        const brandArray = brands.split(",");
+        query.pickup_location = { $in: brandArray };
+      }
+
       // Determine sort options for `sorts` and `priceRange`
       if (sort) {
-          options.sort = { expired_datetime: sort === "recentDays" ? 1 : -1 };
+        options.sort = { expired_datetime: sort === "recentDays" ? 1 : -1 };
       }
       if (priceRange) {
-          options.sort = { price: priceRange === "HtO" ? 1 : -1 };
+        options.sort = { price: priceRange === "HtO" ? 1 : -1 };
       }
-  
+
       try {
-          // Fetch data from the database with the given query and options
-          const result = await FeaturedCollection.find(query, options).toArray();
-          
-          // Send the result back to the client
-          if (result.length === 0) {
-              return res.status(404).json({ message: "Data not found" });
-          }
-          res.send(result);
+        // Fetch data from the database with the given query and options
+        const result = await FeaturedCollection.find(query, options).toArray();
+
+        // Send the result back to the client
+        if (result.length === 0) {
+          return res.status(404).json({ message: "Data not found" });
+        }
+        res.send(result);
       } catch (error) {
-          console.error("Error fetching data:", error);
-          res.status(500).json({ message: "Internal Server Error" });
+        console.error("Error fetching data:", error);
+        res.status(500).json({ message: "Internal Server Error" });
       }
-  });
-  
-    app.get('/FoodCount' , async (req, res) => {
+    });
+
+    app.get("/FoodCount", async (req, res) => {
       const count = await FeaturedCollection.estimatedDocumentCount();
       res.send({ count });
-    })
+    });
 
     app.get("/featured/:id", async (req, res) => {
       const id = req.params.id;
@@ -222,18 +225,11 @@ async function run() {
       res.send(result);
     });
     app.post("/requested", async (req, res) => {
-      const updateData = {
-        $set: {
-          status: "requested",
-          requsterEmail: req.body.requsterEmail,
-          additional_notes: req.body.additional_notes,
-        },
-      };
+      requestFoord = req.body;
+      console.log(requestFoord);
+
       // const result = await requestedCollection.insertOne(requestDoc);
-      const result = await FeaturedCollection.updateOne(
-        { _id: new ObjectId(req.body._id) },
-        updateData
-      );
+      const result = await RequestCollection.insertOne(requestFoord);
       res.send(result);
     });
     app.get("/requested/:email", logger, verifyToken, async (req, res) => {
@@ -243,7 +239,7 @@ async function run() {
       }
       const mail = req.params.email;
       const query = { requsterEmail: mail };
-      const result = await FeaturedCollection.find(query).toArray();
+      const result = await RequestCollection.find(query).toArray();
       res.send(result);
     });
     // new code ----- 09 / 24 /2024
@@ -298,7 +294,7 @@ async function run() {
 
     //   res.send( user?.role );
     // });
-    app.get("/users/admins/:email", logger,verifyToken, async (req, res) => {
+    app.get("/users/admins/:email", logger, verifyToken, async (req, res) => {
       const reqEmail = req.params?.email;
       // console.log("reqEmail", reqEmail);
       const query = { email: `${reqEmail}` };
@@ -337,8 +333,8 @@ async function run() {
     });
     app.get("/Admin/requested", async (req, res) => {
       // console.log(req.user);
-      const query = { status: "requested" };
-      const result = await FeaturedCollection.find(query).toArray();
+      // const query = { status: "requested" };
+      const result = await RequestCollection.find().toArray();
       res.send(result);
     });
 
