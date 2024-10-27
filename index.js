@@ -130,17 +130,23 @@ async function run() {
       const sort = req.query.sorts;
       const priceRange = req.query.priceRange;
       const search = req.query.search;
+      const brands = req.query.brands;
       const searchQuery = { $regex: search, $options: "i" };
-      
+      console.log('the brands' , brands);
       // Initialize query and options
       let query = {};
       let options = {};
-  
+      
       // Add search condition if `search` is provided
       if (search) {
           query = { ...query, food_name: searchQuery };
       }
-  
+     // Brands filter
+     if (brands && brands !== "") {
+      const brandArray = brands.split(",");
+      query.pickup_location = { $in: brandArray };
+    }
+    
       // Determine sort options for `sorts` and `priceRange`
       if (sort) {
           options.sort = { expired_datetime: sort === "recentDays" ? 1 : -1 };
