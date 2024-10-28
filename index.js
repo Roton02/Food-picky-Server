@@ -367,6 +367,43 @@ async function run() {
       );
       res.send(result);
     });
+    // Comment add
+    app.patch("/commentAdd", async (req, res) => {
+      const id = req.body.id_1; // Ensure `id_1` is passed correctly from the client
+      const comment = {
+        id: req.body.id,
+        name: req.body.name,
+        image: req.body.image,
+        text: req.body.text,
+      }; // Create the comment object with the provided data
+    
+      console.log('New Comment:', comment);
+    
+      const updateData = {
+        $push: {
+          comments: comment,
+        },
+      };
+      const options = { upsert: true }; // Set options separately
+    
+      try {
+        const result = await FeaturedCollection.updateOne(
+          { _id: new ObjectId(id) },
+          updateData, // Place update data here
+          options // Pass options last
+        );
+    
+        if (result.modifiedCount > 0) {
+          res.status(200).send(result);
+        } else {
+          res.status(400).send({ error: "Failed to add comment" });
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ error: "An error occurred while adding the comment" });
+      }
+    });
+    
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
