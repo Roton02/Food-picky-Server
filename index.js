@@ -258,7 +258,7 @@ async function run() {
       res.send(cursor);
     });
 
-    // Admi Router
+    // Admin Router
     app.post("/users", async (req, res) => {
       const user = req.body;
       // insert email if user doesnt exists:
