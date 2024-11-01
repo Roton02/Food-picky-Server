@@ -377,7 +377,7 @@ async function run() {
         text: req.body.text,
       }; // Create the comment object with the provided data
     
-      console.log('New Comment:', comment);
+      // console.log('New Comment:', comment);
     
       const updateData = {
         $push: {
